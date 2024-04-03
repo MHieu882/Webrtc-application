@@ -1,0 +1,185 @@
+<%- include('layouts/header.ejs') %>
+<body>
+	<div class="container-fluid h-100">
+		<div class="row justify-content-center h-100" id="chat-container">
+			<!-- lítfrine -->
+			<div class="col-md-4 col-xl-3 chat" id="list-user-chat">
+				<div class="card mb-sm-3 mb-md-0 contacts_card">			
+				<div class="card-header">
+					<!-- menu ban be nhom -->
+					<div class="menu_chat">
+						<ul>
+							<li>
+								<i class="fas fa-user" onclick="showmenu(1)"></i> 
+								<a >Friends</a>
+							</li>
+							<li>
+								<i class="fas fa-users"onclick="showmenu(2)"></i> 
+								<a >Groups</a>
+							</li>
+						</ul>
+					</div>
+				</div>
+
+				<div class="card-body contacts_body" id="list-user">
+						<% users.forEach(user => { %>
+							<ui class="contacts" >
+								<li class="status" id='<%= user.username %>' onclick="showChatContainer('<%= user.username %>')" >
+									<div class="d-flex bd-highlight">
+									<div class="img_cont">
+										<img src="<%= user.avatar %>"class="rounded-circle user_img" >
+									</div>
+										<div class="user_info">
+											<span class="username">
+												<%= user.name %>
+										</span>
+										</div>
+									</div>
+								</li>
+							</ui>
+						<% }); %>
+				</div>
+
+				<!-- gro -->
+				<div class="card-body contacts_body" id="list-group" style="display: none;">
+					<% groups.forEach(group => { %>
+						<ui class="contacts" >
+							<li class="status" id='<%= group.Groupname %>' onclick="showChatContainer('<%= group.Groupname %>')" >
+								<div class="d-flex bd-highlight">
+								<div class="img_cont">
+									<img src="<%= group.avatar %>"class="rounded-circle user_img" >
+								</div>
+									<div class="user_info">
+										<span class="username">
+											<%= group.Groupname %>
+									</span>
+									</div>
+								</div>
+							</li>
+						</ui>
+					<% }); %>
+
+				</div>
+
+				<div class="card-footer" onclick="showForm()"><i class="fas fa-users"></i>New Group</div>
+				<div id="overlay" onclick="hideForm()"></div>
+			</div>
+		</div>
+		<!-- chat -->
+		<div class="col-md-8 col-xl-6 chat" id='message-container'>
+			<div class="card">
+				<div class="card-header msg_head">
+					<div class="d-flex bd-highlight">
+						<div class="img_cont">
+							<img id="avt-chat"  class="rounded-circle user_img">
+							<span class="online_icon"></span>
+						</div>
+						<div class="user_info-chat" id="user_info-chat">
+						<!-- ten user -->
+						</div>
+						<div class="video_cam"  id="call-btn">
+							<span><i class="fas fa-video"   onclick="callUser()"></i></span>
+						</div>
+					</div>
+					<!-- menu -->
+					<span id="action_menu_btn"><i class="fas fa-ellipsis-v"></i></span>
+					<div class="action_menu">
+						<ul id="menu-user">
+							<!-- <li><i class="fas fa-user-circle"></i> Profile</li> -->
+							<li><i class="fas fa-trash" onclick= "showChatContainer('delete')"></i> Delete Chat</li>
+						</ul>
+						
+					</div>
+				</div>
+				<!-- tin nhan -->
+				<div class="card-body msg_card_body" id="card-body msg_card_body">
+					<!-- messenges in here -->
+				</div>
+				<div class="card-footer">
+					<div class="input-group">
+						<!-- icon gui kem -->
+						<textarea  class="form-control type_msg" id="messageInput" placeholder="Type your message..."></textarea>
+						<div class="input-group-append">
+							<textarea id="target" style="display: none;"></textarea>
+							<span class="input-group-text send_btn" >
+								<i class="fas fa-location-arrow" onclick="sendMessage()"></i>
+							</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+			<!-- welcome -->
+			<div >
+				<span id="user-menu-btn"> Welcome <%=loggin.username%>  &nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-list-ul"></i></span>
+					<div class="user-menu">
+						<ul>
+							<li><a><i class="fas fa-user-cog" onclick="showForm(5)"></i>Profile</a></li>
+							<li><a href="/changePassword"><i class="fas fa-key"></i>ChangePassword</a></li>
+							<li><a href="/logout"><i class="fas fa-sign-out-alt"></i>Log out</a></li>
+
+						</ul>
+					</div>
+				</span>
+			</div>
+			<div id="formprofileContainer">
+				<!-- Your form content goes here -->
+				<form action="/profile" method="post"enctype="multipart/form-data">
+					<label for="name">Name:</label>
+					<input type="text" id="name" name="name" value="<%=loggin.name%>">
+					<br>
+					<label for="email">Email:</label>
+					<input type="email" id="email" name="email"value="<%=loggin.email%>">
+					<br>
+					<label for="avatar">Avatar:</label>
+					<img src="<%= loggin.avatar %>" alt="User Avatar" style="width: 300px;">
+					<input type="file" id="avatar" name="avatar" accept="image/*">
+					<br>
+					<button type="submit">Save</button>
+				</form>
+			</div>
+			<!-- form  create group -->
+			<div id="formContainer">
+				 <form method="post" action="/newGroup">
+					<label for="name">Group Name :</label>
+					<input type="text" id="name" name="name">					
+					<!-- <label for="listUser">Thành viên:</label> -->
+					<% users.forEach(user => { %>
+						<div id="list-user">
+							<input type="checkbox" value="<%= user._id %>" name="members[]">	
+							<label for="username"><%= user.username %></label>
+						</div>
+					<% }); %>
+					<button type="submit">Submit</button>
+				</form> 
+			</div> 
+		</div>
+	</div>
+		<!-- video-chat -->
+		<div class="video-container" id="videoContainer" style="display: none;">
+			<div class="video-frame" id="remoteVideoFrame">
+				<video id="remoteVideo" autoplay playsinline></video>
+			</div>
+			<div class="video-frame" id="localVideoFrame">
+				<video id="localvideo" muted autoplay playsinline></video>
+			</div>
+			<div class="controls" id="callControls">
+				<button id="endCallBtn" onclick="endCall()">End Call</button>
+			</div>
+		</div>
+	</div>
+	</div>
+
+	<!-- <div id="metered-frame"></div> -->
+<script src="https://cdn.metered.ca/sdk/video/1.4.6/sdk.min.js"></script>
+<script src="https://cdn.metered.ca/sdk/frame/1.4.3/sdk-frame.min.js"></script>
+<script>
+    const userLoggin=`<%=loggin.username%>`;
+	var frame = new MeteredFrame(); 
+    frame.init({
+        roomURL: "webrtc-videocalling.metered.live/meeting",
+    }, document.getElementById("metered-frame"));
+</script>
+<script src="./js/client.js"></script>
+</body>
+<%- include('layouts/footer.ejs') %>

@@ -1,0 +1,40 @@
+<%- include('layouts/header.ejs') %>
+<div class="container-fluid h-100">
+    <div class="row justify-content-center h-100">
+        <div class="col-md-4 col-xl-3 chat">
+            <div class="card mb-sm-3 mb-md-0 ">
+                <div class="card-header">
+                    
+                       
+                         Change Password
+                  
+                </div>
+                <div class="card-body contacts_body">
+                    <div class="card-body">
+                            <div class="login-box">
+                                <img src="<%= loggin.avatar %>" alt="Avatar" class="logo">
+                                <form action="/changePassword" method="POST">
+
+                                    <label for="password">Old Password:</label>
+                                    <input required type="password" class="text" id="oldpassword" name="oldpassword">
+                                    
+                                    <label for="password">Password:</label>
+                                    <input required type="password" class="text" id="newpassword" name="newpassword">
+
+                                    <label for="password">Confirm Password:</label>
+                                    <input required type="password" class="text" id="newpassword2" name="newpassword2">
+                                    <button type="submit">Change</button>
+                                </form>
+                            </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <% if(typeof message !== 'undefined'){   %>
+                        <p style="color:red;"><%= message %></p>
+                    <%}%>   
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<%- include('layouts/footer.ejs') %>
